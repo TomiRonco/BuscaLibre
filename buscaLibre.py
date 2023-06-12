@@ -3,7 +3,7 @@ import sqlite3
 
 class Libreria:
     def __init__(self):
-        self.conexion = Conexiones()
+        self.conexion = Conexiones() 
         self.conexion.abrirConexion()
         self.conexion.miCursor.execute("DROP TABLE IF EXISTS LIBROS")
         self.conexion.miCursor.execute('''CREATE TABLE LIBROS (
@@ -93,7 +93,6 @@ class Libreria:
             print("No hay libros en la librería")
 
 
-
     def mostrar_libros_titulo(self):
         self.conexion.miCursor.execute("SELECT * FROM LIBROS ORDER BY Titulo")
         libros = self.conexion.miCursor.fetchall()
@@ -112,10 +111,10 @@ class Libreria:
         else:
             print("No hay libros en la librería")
 
-    def validacion(self):
-        self.conexion.miCursor.execute("SELECT * FROM LIBROS WHERE ID = ?", (ID))
-        id = self.conexion.miCursor.fetchone()
-        if id is not None:
+    def validacion(self, ID):
+        self.conexion.miCursor.execute("SELECT * FROM LIBROS WHERE ID = ?", (ID,))
+        libro = self.conexion.miCursor.fetchone()
+        if libro is not None:
             return True
         else:
             return False
@@ -157,10 +156,9 @@ while True:
         cantidadDisponibles = int(input("Cantidad disponible: "))
         libreria.agregar_libro(ID, ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles)
 
-    elif opcion == 2:
+    if opcion == 2:
         ID = int(input("ID del libro a modificar: "))
-        
-        if libreria.validacion(ID) is True:
+        if libreria.validacion(ID):
             nuevo_Precio = float(input("Nuevo precio del libro: $"))
             nueva_Fecha = input("Ingrese la fecha del día de modificación: ")
             libreria.modificar_libro(ID, nuevo_Precio, nueva_Fecha)
