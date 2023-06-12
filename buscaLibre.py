@@ -56,7 +56,7 @@ class Libreria:
         except:
             print("Error al actualizar cantidad del libro")
 
-    def mostrar_libros(self):
+    def mostrar_libros_id(self):
         self.conexion.miCursor.execute("SELECT * FROM LIBROS")
         libros = self.conexion.miCursor.fetchall()
         print("<----- LISTADO DE LIBROS ----->")
@@ -73,6 +73,52 @@ class Libreria:
                 print("-------------------------")
         else:
             print("No hay libros en la librería")
+
+    def mostrar_libros_autor(self):
+        self.conexion.miCursor.execute("SELECT * FROM LIBROS ORDER BY Autor")
+        libros = self.conexion.miCursor.fetchall()
+        print("<----- LISTADO DE LIBROS ----->")
+        if libros:
+            for libro in libros:
+                print("Autor:", libro[3],
+                " | ID:", libro[0],
+                " | ISBN:", libro[1],
+                " | Titulo:", libro[2],
+                " | Genero:", libro[4],
+                " | Precio:", libro[5],
+                " | Fecha último precio:", libro[6],
+                " | Cantidad disponible:", libro[7])
+                print("-------------------------")
+        else:
+            print("No hay libros en la librería")
+
+
+
+    def mostrar_libros_titulo(self):
+        self.conexion.miCursor.execute("SELECT * FROM LIBROS ORDER BY Titulo")
+        libros = self.conexion.miCursor.fetchall()
+        print("<----- LISTADO DE LIBROS ----->")
+        if libros:
+            for libro in libros:
+                print("Titulo:", libro[2],
+                " | ID:", libro[0],
+                " | ISBN:", libro[1],
+                " | Autor:", libro[3],
+                " | Genero:", libro[4],
+                " | Precio:", libro[5],
+                " | Fecha último precio:", libro[6],
+                " | Cantidad disponible:", libro[7])
+                print("-------------------------")
+        else:
+            print("No hay libros en la librería")
+
+    def validacion(self):
+        self.conexion.miCursor.execute("SELECT * FROM LIBROS WHERE ID = ?", (ID))
+        id = self.conexion.miCursor.fetchone()
+        if id is not None:
+            return True
+        else:
+            return False
 
     def cerrar_libreria(self):
         self.conexion.cerrarConexion()
@@ -113,9 +159,13 @@ while True:
 
     elif opcion == 2:
         ID = int(input("ID del libro a modificar: "))
-        nuevo_Precio = float(input("Nuevo precio del libro: $"))
-        nueva_Fecha = input("Ingrese la fecha del día de modificación: ")
-        libreria.modificar_libro(ID, nuevo_Precio, nueva_Fecha)
+        
+        if libreria.validacion(ID) is True:
+            nuevo_Precio = float(input("Nuevo precio del libro: $"))
+            nueva_Fecha = input("Ingrese la fecha del día de modificación: ")
+            libreria.modificar_libro(ID, nuevo_Precio, nueva_Fecha)
+        else:
+            print("ID inexistente")
         
     elif opcion == 3:
         ID = int(input("ID del libro a borrar: "))
@@ -127,7 +177,18 @@ while True:
         libreria.cantidad_libro()
         
     elif opcion == 5:
-        libreria.mostrar_libros()
+        print("Ordenar por 1-ID")
+        print("Ordenar por 2-Autor")
+        print("Ordenar por 3-Titulo")
+        eleccion = int(input("Seleccione una opcion: "))
+        if eleccion == 1:
+            libreria.mostrar_libros_id()
+        elif eleccion == 2:
+            libreria.mostrar_libros_autor()
+        elif eleccion == 3:
+            libreria.mostrar_libros_titulo()
+        else:
+            print("Opcion seleccionada incorrecta")
         
     elif opcion == 0:
         libreria.cerrar_libreria()
