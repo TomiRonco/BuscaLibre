@@ -7,8 +7,8 @@ class Libreria:
         self.conexion.abrirConexion()
         self.conexion.miCursor.execute("DROP TABLE IF EXISTS LIBROS")
         self.conexion.miCursor.execute('''CREATE TABLE LIBROS (
-                                       ID INTEGER PRIMARY KEY,
-                                       ISBN INTEGER,
+                                       ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                       ISBN INTEGER UNIQUE,
                                        Titulo VARCHAR(30),
                                        Autor VARCHAR(30),
                                        Genero VARCHAR(30),
@@ -18,10 +18,10 @@ class Libreria:
                                        ''')
         self.conexion.miConexion.commit()
 
-    def agregar_libro(self, ID, ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles):
+    def agregar_libro(self, ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles):
         try:
             self.conexion.miCursor.execute(
-                "INSERT INTO LIBROS (ID, ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (ID, ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles))
+                "INSERT INTO LIBROS ( ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles) VALUES (?, ?, ?, ?, ?, ?, ?)", (ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles))
             self.conexion.miConexion.commit()
             print("Libro agregado exitosamente")
         except:
@@ -146,7 +146,6 @@ while True:
     opcion = int(input("Por favor ingrese un número: "))
 
     if opcion == 1:
-        ID = input("ID: ")
         ISBN = input("ISBN: ")
         Titulo = input("Titulo: ")
         Autor = input("Autor: ")
@@ -154,7 +153,7 @@ while True:
         Precio = float(input("Precio: $"))
         FechaUltimoPrecio = input("Fecha último precio (YYYY-MM-DD): ")
         cantidadDisponibles = int(input("Cantidad disponible: "))
-        libreria.agregar_libro(ID, ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles)
+        libreria.agregar_libro(ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles)
 
     if opcion == 2:
         ID = int(input("ID del libro a modificar: "))
