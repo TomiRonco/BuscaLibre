@@ -23,6 +23,17 @@ class Libreria:
                                        Cantidad INTERGER,
                                        FechaVenta VARCHAR(10))
                                        ''')
+        self.conexion.miCursor.execute("DROP TABLE IF EXISTS HISTORICO_LIBROS")
+        self.conexion.miCursor.execute('''CREATE TABLE HISTORICO_LIBROS (
+                                       ID INTEGER,
+                                       ISBN INTEGER,
+                                       Titulo VARCHAR(30),
+                                       Autor VARCHAR(30),
+                                       Genero VARCHAR(30),
+                                       Precio FLOAT NOT NULL,
+                                       FechaUltimoPrecio VARCHAR(10),
+                                       cantidadDisponibles INTEGER NOT NULL)
+                                       ''')
         self.conexion.miConexion.commit()
 
     def agregar_libro(self, ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles):
@@ -170,6 +181,24 @@ class Libreria:
         else:
             print("No hay ventas registradas")
 
+    def actualizar_porcentaje(self, porcentaje, fechaPorcentaje):
+        self.conexion.miCursor.execute("INSERT INTO HISTORICO_LIBROS SELECT * FROM LIBROS")
+
+        try:
+            self.conexion.miCursor.execute("SELECT * FROM LIBROS")
+            resultado = self.conexion.miCursor.fetchall()
+
+            for actualizar in resultado:
+                precio = actualizar[5]
+                precio = precio + (precio * (porcentaje/100))
+                id = actualizar[0]
+                self.conexion.miCursor.execute("UPDATE LIBROS SET Precio = ?, FechaUltimoPrecio = ? WHERE ID = ?", (round(precio, 2), fechaPorcentaje, id))
+            print("Libros actualizados exitosamente.")
+
+        except:
+            print("Error al actualizar libros")
+
+
     def cerrar_libreria(self):
         self.conexion.cerrarConexion()
 
@@ -193,6 +222,8 @@ while True:
     print("4-. Modificar cantidad de un libro.")
     print("5-. Mostrar lista de libros.")
     print("6-. Realizar venta.")
+    print("7-. Actualizar precios.")
+    print("8-. Mostrar Registros.")
     print("0-. Salir del menú.")
 
     opcion = int(input("Por favor ingrese un número: "))
@@ -254,6 +285,10 @@ while True:
         libreria.realizar_venta(LibroID, Cantidad, FechaVenta)
         libreria.mostrar_ventas()
         
+    elif opcion == 7:
+        porcentaje = int(input("Ingrese el porcentaje que aumento el dolar: "))
+        fechaPorcentaje = input("Ingrese la fecha de actulizacion del precio(YYYY-MM-DD): ")
+        libreria.actualizar_porcentaje(porcentaje, fechaPorcentaje)
         
     elif opcion == 0:
         libreria.cerrar_libreria()
