@@ -317,4 +317,4 @@ while True:
         libreria.cerrar_libreria()
         break
 
-    """ VALIDACIONES DE ID Y PREGUNTA DE SI QUIERE MODIFICAR """
+
