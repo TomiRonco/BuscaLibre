@@ -13,7 +13,7 @@ class Libreria:
                                        Autor VARCHAR(30),
                                        Genero VARCHAR(30),
                                        Precio FLOAT NOT NULL,
-                                       FechaUltimoPrecio VARCHAR(10),
+                                       FechaUltimoPrecio TEXT,
                                        cantidadDisponibles INTEGER NOT NULL)
                                        ''')
         self.conexion.miCursor.execute("DROP TABLE IF EXISTS VENTAS")
@@ -21,7 +21,7 @@ class Libreria:
                                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                        LibroID INTEGER,
                                        Cantidad INTERGER,
-                                       FechaVenta VARCHAR(10))
+                                       FechaVenta TEXT)
                                        ''')
         self.conexion.miCursor.execute("DROP TABLE IF EXISTS HISTORICO_LIBROS")
         self.conexion.miCursor.execute('''CREATE TABLE HISTORICO_LIBROS (
@@ -31,7 +31,7 @@ class Libreria:
                                        Autor VARCHAR(30),
                                        Genero VARCHAR(30),
                                        Precio FLOAT NOT NULL,
-                                       FechaUltimoPrecio VARCHAR(10),
+                                       FechaUltimoPrecio TEXT,
                                        cantidadDisponibles INTEGER NOT NULL)
                                        ''')
         self.conexion.miConexion.commit()
@@ -199,6 +199,25 @@ class Libreria:
             print("Error al actualizar libros")
 
 
+    def mostrarSegunFecha(self, fecha):
+        self.conexion.miCursor.execute("SELECT * FROM LIBROS WHERE FechaUltimoPrecio <= ? ",(fecha,))
+        libros = self.conexion.miCursor.fetchall()
+        print("<----- LISTADO DE LIBROS ----->")
+        if libros:
+            for libro in libros:
+                print("Titulo:", libro[2],
+                      " | ID:", libro[0],
+                      " | ISBN:", libro[1],
+                      " | Autor:", libro[3],
+                      " | Genero:", libro[4],
+                      " | Precio:", libro[5],
+                      " | Fecha último precio:", libro[6],
+                      " | Cantidad disponible:", libro[7])
+                print("-------------------------")
+        else:
+            print("No hay libros con fecha anterior a la especificada")
+
+
     def cerrar_libreria(self):
         self.conexion.cerrarConexion()
 
@@ -289,6 +308,10 @@ while True:
         porcentaje = int(input("Ingrese el porcentaje que aumento el dolar: "))
         fechaPorcentaje = input("Ingrese la fecha de actulizacion del precio(YYYY-MM-DD): ")
         libreria.actualizar_porcentaje(porcentaje, fechaPorcentaje)
+
+    elif opcion == 8:
+        fecha = input("Ingrese la fecha: ")
+        libreria.mostrarSegunFecha(fecha)
         
     elif opcion == 0:
         libreria.cerrar_libreria()
