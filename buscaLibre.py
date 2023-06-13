@@ -164,8 +164,7 @@ class Libreria:
         print("<----- LISTADO DE VENTAS ----->")
         if ventas:
             for venta in ventas:
-                print("ID: ", venta[0],
-                      " | LibroID: ", venta[1],
+                print("Libro ID: ", venta[0],
                       " | Cantidad: ", venta[2],
                       " | Fecha de venta: ", venta[3])
         else:
