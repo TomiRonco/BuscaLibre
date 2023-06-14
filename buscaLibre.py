@@ -12,9 +12,9 @@ class Libreria:
                                        Titulo VARCHAR(30),
                                        Autor VARCHAR(30),
                                        Genero VARCHAR(30),
-                                       Precio FLOAT NOT NULL,
+                                       Precio FLOAT,
                                        FechaUltimoPrecio TEXT,
-                                       cantidadDisponibles INTEGER NOT NULL)
+                                       cantidadDisponibles INTEGER)
                                        ''')
         self.conexion.miCursor.execute("DROP TABLE IF EXISTS VENTAS")
         self.conexion.miCursor.execute('''CREATE TABLE VENTAS (
@@ -252,18 +252,24 @@ while True:
         Titulo = input("Titulo: ")
         Autor = input("Autor: ")
         Genero = input("Genero: ")
-        Precio = float(input("Precio: $"))
+        Precio = (input("Precio: $"))
         FechaUltimoPrecio = input("Fecha último precio (YYYY-MM-DD): ")
-        cantidadDisponibles = int(input("Cantidad disponible: "))
-        libreria.agregar_libro(ISBN, Titulo, Autor, Genero,
-                               Precio, FechaUltimoPrecio, cantidadDisponibles)
+        cantidadDisponibles = (input("Cantidad disponible: "))
+        if ISBN and Titulo and Autor and Genero and Precio and FechaUltimoPrecio and cantidadDisponibles:
+            libreria.agregar_libro(ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles)
+        else:
+            print("Todos los datos son obligatorios. Por favor ingrese los datos nuevamente.")
+        
 
     if opcion == 2:
         ID = int(input("ID del libro a modificar: "))
         if libreria.validacion(ID):
-            nuevo_Precio = float(input("Nuevo precio del libro: $"))
+            nuevo_Precio = (input("Nuevo precio del libro: $"))
             nueva_Fecha = input("Ingrese la fecha del día de modificación: ")
-            libreria.modificar_libro(ID, nuevo_Precio, nueva_Fecha)
+            if nuevo_Precio and nueva_Fecha:
+                libreria.modificar_libro(ID, nuevo_Precio, nueva_Fecha)
+            else:
+                print("Todos los datos son obligatorios. Por favor ingrese los datos nuevamente.")
         else:
             print("ID inexistente")
 
@@ -277,8 +283,11 @@ while True:
     elif opcion == 4:
         ID = int(input("ID del libro a modificar cantidad: "))
         if libreria.validacion(ID):
-            nueva_cantidad = int(input("Ingrese la nueva cantidad del libro: "))
-            libreria.cantidad_libro(nueva_cantidad, ID)
+            nueva_cantidad = (input("Ingrese la nueva cantidad del libro: "))
+            if nueva_cantidad:
+                libreria.cantidad_libro(nueva_cantidad, ID)
+            else:
+                print("Todos los datos son obligatorios. Por favor ingrese los datos nuevamente.")
         else:
             print("ID inexistente")
         
