@@ -70,7 +70,7 @@ class Libreria:
                 print("Libro eliminado exitosamente.")
             else:
                 print("No se ha eliminado el libro.")
-                
+
         except:
             print("Error al borrar el libro")
 
@@ -85,7 +85,7 @@ class Libreria:
             print("Error al actualizar cantidad del libro")
 
     def mostrar_libros_id(self):
-        self.conexion.miCursor.execute("SELECT * FROM LIBROS")
+        self.conexion.miCursor.execute("SELECT * FROM LIBROS ORDER BY ID")
         libros = self.conexion.miCursor.fetchall()
         print("<----- LISTADO DE LIBROS ----->")
         if libros:
@@ -138,6 +138,26 @@ class Libreria:
         else:
             print("No hay libros en la librería")
 
+    def mostrar_libros_rango_precio(self, precio_min, precio_max):
+        self.conexion.miCursor.execute(
+        "SELECT * FROM LIBROS WHERE Precio >= ? AND Precio <= ?", (precio_min, precio_max))
+        libros = self.conexion.miCursor.fetchall()
+        print("<----- LISTADO DE LIBROS ----->")
+        if libros:
+            for libro in libros:
+                print("Titulo:", libro[2],
+                    " | ID:", libro[0],
+                    " | ISBN:", libro[1],
+                    " | Autor:", libro[3],
+                    " | Genero:", libro[4],
+                    " | Precio:", libro[5],
+                    " | Fecha último precio:", libro[6],
+                    " | Cantidad disponible:", libro[7])
+                print("-------------------------")
+        else:
+            print("No hay libros dentro del rango de precios especificado")
+
+
     def validacion(self, ID):
         self.conexion.miCursor.execute(
             "SELECT * FROM LIBROS WHERE ID = ?", (ID,))
@@ -146,27 +166,29 @@ class Libreria:
             return True
         else:
             return False
-        
+
     def realizar_venta(self, LibroID, Cantidad, FechaVenta):
         try:
             libro = self.conexion.miCursor.execute(
                 "SELECT cantidadDisponibles FROM LIBROS WHERE ID = ?", (LibroID,))
             libro = self.conexion.miCursor.fetchone()
-            
+
             if libro and libro[0] >= Cantidad:
                 self.conexion.miCursor.execute(
-                    "INSERT INTO VENTAS (LibroID, Cantidad, FechaVenta) VALUES (?, ?, ?)", (LibroID, Cantidad, FechaVenta)
-                    )
+                    "INSERT INTO VENTAS (LibroID, Cantidad, FechaVenta) VALUES (?, ?, ?)", (
+                        LibroID, Cantidad, FechaVenta)
+                )
                 self.conexion.miCursor.execute(
-                    "UPDATE LIBROS SET cantidadDisponibles = cantidadDisponibles - ? WHERE ID = ?", (Cantidad, LibroID)
-                    )
+                    "UPDATE LIBROS SET cantidadDisponibles = cantidadDisponibles - ? WHERE ID = ?", (
+                        Cantidad, LibroID)
+                )
                 self.conexion.miConexion.commit()
                 print("Venta realizada correctamente")
             else:
                 print("No hay suficientes libros disponibles.")
         except:
             print("Error al registrar venta")
-            
+
     def mostrar_ventas(self):
         self.conexion.miCursor.execute(
             "SELECT * FROM VENTAS"
@@ -182,7 +204,8 @@ class Libreria:
             print("No hay ventas registradas")
 
     def actualizar_porcentaje(self, porcentaje, fechaPorcentaje):
-        self.conexion.miCursor.execute("INSERT INTO HISTORICO_LIBROS SELECT * FROM LIBROS")
+        self.conexion.miCursor.execute(
+            "INSERT INTO HISTORICO_LIBROS SELECT * FROM LIBROS")
 
         try:
             self.conexion.miCursor.execute("SELECT * FROM LIBROS")
@@ -192,15 +215,16 @@ class Libreria:
                 precio = actualizar[5]
                 precio = precio + (precio * (porcentaje/100))
                 id = actualizar[0]
-                self.conexion.miCursor.execute("UPDATE LIBROS SET Precio = ?, FechaUltimoPrecio = ? WHERE ID = ?", (round(precio, 2), fechaPorcentaje, id))
+                self.conexion.miCursor.execute(
+                    "UPDATE LIBROS SET Precio = ?, FechaUltimoPrecio = ? WHERE ID = ?", (round(precio, 2), fechaPorcentaje, id))
             print("Libros actualizados exitosamente.")
 
         except:
             print("Error al actualizar libros")
 
-
     def mostrarSegunFecha(self, fecha):
-        self.conexion.miCursor.execute("SELECT * FROM LIBROS WHERE FechaUltimoPrecio <= ? ",(fecha,))
+        self.conexion.miCursor.execute(
+            "SELECT * FROM LIBROS WHERE FechaUltimoPrecio <= ? ", (fecha,))
         libros = self.conexion.miCursor.fetchall()
         print("<----- LISTADO DE LIBROS ----->")
         if libros:
@@ -216,7 +240,6 @@ class Libreria:
                 print("-------------------------")
         else:
             print("No hay libros con fecha anterior a la especificada")
-
 
     def cerrar_libreria(self):
         self.conexion.cerrarConexion()
@@ -256,10 +279,11 @@ while True:
         FechaUltimoPrecio = input("Fecha último precio (YYYY-MM-DD): ")
         cantidadDisponibles = (input("Cantidad disponible: "))
         if ISBN and Titulo and Autor and Genero and Precio and FechaUltimoPrecio and cantidadDisponibles:
-            libreria.agregar_libro(ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles)
+            libreria.agregar_libro(
+                ISBN, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, cantidadDisponibles)
         else:
-            print("Todos los datos son obligatorios. Por favor ingrese los datos nuevamente.")
-        
+            print(
+                "Todos los datos son obligatorios. Por favor ingrese los datos nuevamente.")
 
     if opcion == 2:
         ID = int(input("ID del libro a modificar: "))
@@ -269,7 +293,8 @@ while True:
             if nuevo_Precio and nueva_Fecha:
                 libreria.modificar_libro(ID, nuevo_Precio, nueva_Fecha)
             else:
-                print("Todos los datos son obligatorios. Por favor ingrese los datos nuevamente.")
+                print(
+                    "Todos los datos son obligatorios. Por favor ingrese los datos nuevamente.")
         else:
             print("ID inexistente")
 
@@ -287,15 +312,16 @@ while True:
             if nueva_cantidad:
                 libreria.cantidad_libro(nueva_cantidad, ID)
             else:
-                print("Todos los datos son obligatorios. Por favor ingrese los datos nuevamente.")
+                print(
+                    "Todos los datos son obligatorios. Por favor ingrese los datos nuevamente.")
         else:
             print("ID inexistente")
-        
 
     elif opcion == 5:
         print("Ordenar por 1-ID")
         print("Ordenar por 2-Autor")
         print("Ordenar por 3-Titulo")
+        print("Ordenar por 4-Rango de precio")
         eleccion = int(input("Seleccione una opcion: "))
         if eleccion == 1:
             libreria.mostrar_libros_id()
@@ -303,6 +329,10 @@ while True:
             libreria.mostrar_libros_autor()
         elif eleccion == 3:
             libreria.mostrar_libros_titulo()
+        elif eleccion == 4:
+            precio_min = float(input("Ingrese el precio minimo: $"))
+            precio_max = float(input("Ingrese el precio maximo: $"))
+            libreria.mostrar_libros_rango_precio(precio_min, precio_max)
         else:
             print("Opcion seleccionada incorrecta")
 
@@ -312,18 +342,17 @@ while True:
         FechaVenta = input("Ingrese la fecha de venta: ")
         libreria.realizar_venta(LibroID, Cantidad, FechaVenta)
         libreria.mostrar_ventas()
-        
+
     elif opcion == 7:
         porcentaje = int(input("Ingrese el porcentaje que aumento el dolar: "))
-        fechaPorcentaje = input("Ingrese la fecha de actulizacion del precio(YYYY-MM-DD): ")
+        fechaPorcentaje = input(
+            "Ingrese la fecha de actulizacion del precio(YYYY-MM-DD): ")
         libreria.actualizar_porcentaje(porcentaje, fechaPorcentaje)
 
     elif opcion == 8:
         fecha = input("Ingrese la fecha: ")
         libreria.mostrarSegunFecha(fecha)
-        
+
     elif opcion == 0:
         libreria.cerrar_libreria()
         break
-
-
